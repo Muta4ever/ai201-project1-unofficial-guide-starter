@@ -4,8 +4,12 @@ A Retrieval-Augmented Generation (RAG) system that makes student-generated knowl
 about Augustana College professors searchable and answerable. Ask a plain-language
 question and get a grounded, cited answer drawn from real student reviews.
 
-> ⚠️ **Before submitting:** review the **Spec Reflection** and **AI Usage** sections and
-> edit them to match your own experience and voice — these should be yours, not generic.
+## Demo Video
+
+A 3–5 minute walkthrough of the system is included in this repo:
+**[`walkthrough-2.mp4`](walkthrough-2.mp4)**. It shows multiple queries with source
+citations, a query where retrieval works well, the Math 160 failure case, and a
+walkthrough of the evaluation report.
 
 ---
 
@@ -281,8 +285,6 @@ intact instead of splitting it.
 
 ## Spec Reflection
 
-> ⚠️ Edit this to reflect your own experience.
-
 **One way the spec helped you during implementation:** Writing the evaluation plan in `planning.md`
 *before* coding meant I had five concrete, verifiable questions ready the moment retrieval worked.
 That let me test retrieval against real target questions in Milestone 4 (and catch the cosine-vs-L2
@@ -300,9 +302,6 @@ and contributed to the thin-coverage failure on Math 160 (documented above).
 ---
 
 ## AI Usage
-
-> ⚠️ Edit this to reflect your own experience and the tools you actually used.
-
 **Instance 1 — Chunking pipeline review**
 - *What I gave the AI:* My chunking strategy plus a peer's `chunk_text()` fixed-size sliding-window
   function, and asked whether it fit my review-style documents.
