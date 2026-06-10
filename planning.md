@@ -11,7 +11,7 @@
 
 <!-- What domain did you choose? Why is this knowledge valuable and hard to find through official channels? --> 
 
---- I chose Professor/course reviews. During course registration, it is a problem for students to find professors that match themselves. I chose this because the only thing the school provides is a course catalog, and hopefully, by the end of the project, there is a lot of nuance and the student can make an educated guess regarding the course they want to chose or the professot.  
+I chose Professor/Course Reviews as my project topic. During course registration, many students struggle to find professors and courses that best fit their learning preferences and academic goals. I selected this problem because the university currently only provides a course catalog, which offers limited information beyond basic course details. By the end of this project, I hope to create a system that provides more nuanced insights into professors and courses, allowing students to make more informed decisions when selecting classes and instructors.  
 ## Documents
 
 <!-- List your specific sources: URLs, subreddit names, forum threads, or file descriptions.
