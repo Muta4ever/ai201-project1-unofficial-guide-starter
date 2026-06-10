@@ -39,25 +39,12 @@
      numbers fit the structure of your documents.
      A review-heavy corpus warrants different chunking than a long FAQ. -->
 
-**Chunk size:** 400
+**Chunk size:** 500
 
-**Overlap:** 50
+**Overlap:** 100
 
-**Reasoning:**
-These documents are **review-heavy, not long-form**. In the RMP files, each review is already a
-self-contained unit: a metadata header (`QUALITY | DIFFICULTY | COURSE | DATE`) followed by 1–5
-sentences of opinion, separated by `---`. A single review is exactly the "complete, retrievable
-thought" the project asks for — e.g. *"Jensen is the worst professor I've ever had... he cannot
-teach to save his life... expects you to learn everything yourself."* That stands on its own and
-answers a query by itself.
+**Reasoning:** My documents are short, opinion-dense reviews rather than long-form guides. I chose a fixed-size sliding-window chunker: take 500 characters at a time, then step forward by 400 (so each window overlaps the previous one by 100 characters). Before chunking, I strip the UTF-8 BOM and collapse all whitespace/newlines to single spaces so the source line breaks don't fragment the text.
 
-So my primary strategy is **split on the natural review boundary** (`---` for RMP files, and
-POST/REPLY structure for YikYak threads) rather than blindly cutting every N characters. Most
-individual reviews land around 300–450 characters, which is why I set the target chunk size near
-400 — it matches the natural unit instead of fighting it. When a single review is unusually long,
-I fall back to a ~400-char split *with 50-char overlap* so a sentence that spans the cut is still
-recoverable from either side.
----
 
 ## Retrieval Approach
 
@@ -68,10 +55,14 @@ recoverable from either side.
      support, accuracy on domain-specific text, latency? -->
 
 **Embedding model:** `all-MiniLM-L6-v2` via `sentence-transformers`
-
-**Top-k:** 4
+**Vector Store** ChromaDB cosine
+**Top-k:** 4 
 
 **Production tradeoff reflection:**
+Accuracy on domain text: MiniLM is small and general-purpose. A larger model (all-mpnet-base-v2, or an API model like OpenAI text-embedding-3-large) would better separate near-duplicate sentiments like "disorganized but caring" vs "disorganized and mean."
+Context length: MiniLM truncates ~256 tokens — fine for short reviews, but a longer-context model would matter for long guides/syllabi.
+Multilingual: all docs are English now; I'd switch to a multilingual model if I added international-student forums.
+Local vs API: local MiniLM is free with no rate limits, ideal here. In production I'd weigh an API model's better accuracy against per-call cost, latency, and the privacy of sending student data to a vendor.
 
 ---
 
@@ -102,10 +93,7 @@ recoverable from either side.
    pre-summarized bullet lists. The chunker has to handle both layouts without producing fragments
    or merging multiple bullets into one diluted chunk.
 
-2. **Conflicting sources across document types.** The CS YikYak thread says Mueller is "gone" and
-   even "the anti-Christ," while her RMP file is overwhelmingly positive (4.7/5). The system could
-   merge these into a contradictory or confusing answer, or cite the wrong source for a claim.
-   Source attribution has to be exact so the user can see *which* source said what.
+2. Thin coverage → off-topic retrieval. Some topics (e.g. Math 160) live in only one short thread. When few relevant chunks exist, the top-k fills with loosely-related chunks from other professors, which can mislead the answer and pollute the source citations.
 
 ---
 
@@ -119,12 +107,12 @@ recoverable from either side.
 ```
  1. Ingestion        2. Chunking        3. Embedding + Store      4. Retrieval        5. Generation
  ------------        -----------        --------------------      ------------        -------------
- Load 10 .txt        Split on review    all-MiniLM-L6-v2          Embed query,        Groq
- files, strip   -->  (---) & POST/  --> (sentence-          -->   ChromaDB       -->  llama-3.3-70b
- BOM/headers,        REPLY, ~400        transformers) ->          similarity          answers ONLY from
- clean whitespace    chars, 50          vectors in ChromaDB       search,             retrieved chunks
-                     overlap            + metadata (source,       top-k = 4           + cites source files
-                                        professor, position)                                |
+ Load 10 .txt        Fixed-size         all-MiniLM-L6-v2          Embed query,        Groq
+ files, strip   -->  sliding window --> (sentence-          -->   ChromaDB       -->  llama-3.3-70b
+ BOM, collapse       500 chars,         transformers) ->          cosine search,      answers ONLY from
+ whitespace          step 400           vectors in ChromaDB       top-k = 4           retrieved chunks
+                     (100 overlap)      + metadata (source,                           + cites sources
+                                        position, length)                                   |
                                                                                             v
                                                                                      Gradio web UI
                                                                                   (question -> answer
@@ -145,29 +133,10 @@ recoverable from either side.
      with my specified chunk size and overlap" is a plan. -->
 
 **Milestone 3 — Ingestion and chunking:**
-I'll give **Claude** my *Documents* table and *Chunking Strategy* section above (plus a note that RMP
-reviews are separated by `---` and YikYak files use POST/REPLY structure) and ask it to implement
-`load_documents()` and `chunk_text()` — splitting on the review boundary first, falling back to a
-~400-char / 50-overlap split for long reviews, attaching `{source_file, professor, chunk_index}`
-metadata, and dropping empty/whitespace chunks. **Verify:** print 5 random chunks and confirm each
-is a complete, single-review thought with the right source attached; confirm total chunk count is
-in the 50–2000 range the rubric expects (this corpus will likely land around 80–150 chunks).
+IGive the AI my Documents + Chunking Strategy sections and a peer's chunk_text() and ask it to verify the fixed-size 500/100 splitter fits my review data and produces a healthy chunk count. Expect: a chunk count and inspection of sample chunks. Verify by reading 5 random chunks for fragments/HTML/empty strings.
 
 **Milestone 4 — Embedding and retrieval:**
-I'll give Claude the *Retrieval Approach* section and the architecture diagram and ask it to embed
-all chunks with `all-MiniLM-L6-v2`, persist them to ChromaDB with metadata, and write
-`retrieve(query, k=4)` returning chunks + source + distance scores. **Verify:** run test questions
-1, 3, and 4, print returned chunks with distances, and confirm top results are on-topic with
-distances below ~0.5 before adding any generation. If anything I don't recognize in the ChromaDB
-API shows up, I'll ask Claude to explain it line by line.
+Give the AI my Retrieval Approach section and ask it to embed chunks with MiniLM, store them in ChromaDB with source metadata, and write retrieve(query, k=4). Verify by running 3 eval queries and checking the top chunks are on-topic with distances below 0.5.
 
 **Milestone 5 — Generation and interface:**
-I'll give Claude my grounding requirement (answer **only** from retrieved chunks; if they don't
-cover it, say "I don't have enough information on that") and the desired output (answer + list of
-source files), plus the Gradio skeleton from the instructions. I'll ask it to wire retrieval → Groq
-`llama-3.3-70b-versatile` → response, appending source filenames **programmatically** rather than
-trusting the model to cite. **Verify:** I'll read the system prompt to confirm grounding is
-*enforced*, test an out-of-scope question (e.g. "what's the best dining hall?") to confirm it
-refuses, and check that a normal answer's cited sources actually match the chunks that were
-retrieved.
-
+Give the AI my grounding requirement (answer only from retrieved chunks; refuse otherwise) and desired output (answer + source list), plus the Gradio skeleton. Verify the system prompt actually enforces grounding and that an out-of-scope question is refused.
