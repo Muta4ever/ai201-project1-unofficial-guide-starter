@@ -1,21 +1,35 @@
 # Project 1 Planning: The Unofficial Guide
 
-> Write this document before you write any pipeline code.
-> Your spec and architecture diagram are what you'll use to direct AI tools (Claude, Copilot, etc.) to generate your implementation — the more specific they are, the more useful the generated code will be.
-> Update the Retrieval Approach and Chunking Strategy sections if you change your approach during implementation.
-> Update this file before starting any stretch features.
+> ⚠️ This is a **sample / model** version of `planning.md`, filled in by going through
+> the 10 documents in `documents/`. Read it to see what "substantive, not placeholder"
+> looks like for Milestone 2, then rewrite the real `planning.md` in your own words.
+> Don't submit AI-generated planning — the project explicitly warns against that. Use this
+> to understand the shape of a good spec, then make the decisions yourself.
 
 ---
 
 ## Domain
 
-<!-- What domain did you choose? Why is this knowledge valuable and hard to find through official channels? --> 
+I chose **student reviews of professors and courses at Augustana College**. Specifically, the
+"unofficial" opinions students share about what a professor's class is *actually* like to take —
+teaching quality, grading fairness, how exams relate to lectures, organization, and which
+professor to pick when a course is taught by several people.
 
---- I chose Professor/course reviews. During course registration, it is a problem for students to find professors that match themselves. I chose this because the only thing the school provides is a course catalog, and hopefully, by the end of the project, there is a lot of nuance and the student can make an educated guess regarding the course they want to chose or the professot.  
+This knowledge is valuable and hard to find through official channels because the course catalog
+and department pages only tell you a course exists and who teaches it — they never tell you that
+one organic chemistry professor expects you to teach yourself the entire course, or that a
+sociology professor is an easy A but you won't learn much. That information only lives in
+crowd-sourced reviews (Rate My Professors) and anonymous campus threads (YikYak), and it's
+scattered across hundreds of individual posts that nobody has ever summarized in one place.
+
+---
+
 ## Documents
 
-<!-- List your specific sources: URLs, subreddit names, forum threads, or file descriptions.
-     Aim for at least 10 sources that together cover different subtopics or perspectives within your domain. -->
+10 source documents, collected as `.txt` files in the `documents/` folder. Two source types:
+**Rate My Professors (RMP) archives** (longer, many reviews per professor) and **YikYak threads**
+(short, conversational Q&A about which professor to take). The mix gives both detailed individual
+reviews and quick "who should I take?" community consensus.
 
 | #  | Source | Description | URL or location |
 |----|--------|-------------|-----------------|
@@ -30,20 +44,21 @@
 | 9  | YikYak | Calculus (Math 160) — lenient professor recommendations | `documents/yikyak_math_course_lore.txt` |
 | 10 | YikYak | Dr. Auf epidemiology / public health experience thread | `documents/yikyak_public_health.txt` |
 
+**Coverage note:** the sources overlap intentionally — Auf appears in both an RMP file (#6) and a
+YikYak thread (#10), and Jensen appears in both his RMP file (#3) and the chemistry YikYak thread
+(#7). This lets the system corroborate (or contrast) the detailed review data against quick
+community consensus.
+
 ---
 
 ## Chunking Strategy
 
-<!-- How will you split documents into chunks?
-     State your chunk size (in tokens or characters), overlap size, and explain why those
-     numbers fit the structure of your documents.
-     A review-heavy corpus warrants different chunking than a long FAQ. -->
+**Chunk size:** ~400 characters (target), with a hard floor so tiny fragments get dropped/merged.
 
-**Chunk size:** 400
-
-**Overlap:** 50
+**Overlap:** 50 characters.
 
 **Reasoning:**
+
 These documents are **review-heavy, not long-form**. In the RMP files, each review is already a
 self-contained unit: a metadata header (`QUALITY | DIFFICULTY | COURSE | DATE`) followed by 1–5
 sentences of opinion, separated by `---`. A single review is exactly the "complete, retrievable
@@ -57,30 +72,56 @@ individual reviews land around 300–450 characters, which is why I set the targ
 400 — it matches the natural unit instead of fighting it. When a single review is unusually long,
 I fall back to a ~400-char split *with 50-char overlap* so a sentence that spans the cut is still
 recoverable from either side.
+
+- **Why not bigger (e.g. 500–1000)?** Bigger chunks would glue several unrelated reviews together.
+  A query like "are Jensen's exams like the lectures?" would then match a blob that also discusses
+  his office hours, his chalk, and a different course — diluting the embedding and the answer.
+- **Why not smaller (e.g. 150)?** A 150-char chunk would chop a review mid-thought
+  (*"Professor's exams are heavily"*) — a fragment with no standalone meaning, exactly the bad case
+  the rubric warns about.
+- **Overlap is small (50)** because the review boundary already keeps thoughts intact; I only need
+  a little overlap to cover the rare cross-boundary sentence, not to stitch a long narrative.
+- **Each chunk keeps its review header / source context** (professor name + course + date) attached
+  via metadata so a retrieved chunk can be attributed without re-reading neighbors.
+
+**How I'll know it's wrong:** if printed chunks are fragments or empty → too small / bad splitter.
+If a single chunk covers two professors or three topics → too big, go back to per-review splitting.
+
 ---
 
 ## Retrieval Approach
 
-<!-- Which embedding model are you using (e.g., all-MiniLM-L6-v2 via sentence-transformers)?
-     How many chunks will you retrieve per query (top-k)?
-     If you were deploying this for real users and cost wasn't a constraint, what tradeoffs
-     would you weigh in choosing a different embedding model — context length, multilingual
-     support, accuracy on domain-specific text, latency? -->
+**Embedding model:** `all-MiniLM-L6-v2` via `sentence-transformers` (runs locally, no API key,
+384-dim embeddings). Vector store: **ChromaDB** (local, persistent).
 
-**Embedding model:** `all-MiniLM-L6-v2` via `sentence-transformers`
+**Top-k:** 4. Each chunk ≈ one review, and most of my test questions are about the *consensus*
+across reviews ("what do students say about X"), so I want a few independent reviews, not one. 4 is
+enough to surface a couple of corroborating opinions without pulling in loosely-related reviews
+about a different course that would pull the LLM off-topic. I'll tune this after seeing real
+distance scores in Milestone 4.
 
-**Top-k:** 4
+**Production tradeoff reflection (if cost weren't a constraint):**
 
-**Production tradeoff reflection:**
+- **Accuracy on domain-specific text:** `all-MiniLM-L6-v2` is small and general-purpose. A larger
+  model (e.g. `all-mpnet-base-v2`, or an API model like OpenAI `text-embedding-3-large` /
+  Voyage's domain models) would better distinguish near-duplicate review sentiments
+  ("disorganized but caring" vs "disorganized and mean").
+- **Context length:** MiniLM truncates around 256 tokens. My chunks are short so that's fine here,
+  but for long-form guides I'd want a longer-context embedding model.
+- **Multilingual:** all my docs are English, so multilingual support isn't needed now; if I added
+  international-student forums I'd switch to a multilingual model.
+- **Local vs API / latency:** local MiniLM has zero marginal cost and no rate limits, which is
+  perfect for a free project. In production with high traffic I'd weigh an API model's better
+  accuracy against per-call cost, latency, and sending student data to a third party (privacy).
+
+**Why semantic search helps here:** a student might ask "is Jensen's class a lot of
+self-teaching?" — no review uses the phrase "self-teaching," but reviews say "you have to teach
+yourself everything." Semantic similarity matches the *meaning*, not the exact words, which
+keyword search would miss.
 
 ---
 
 ## Evaluation Plan
-
-<!-- List your 5 test questions with their expected correct answers.
-     Questions should be specific enough that you can judge whether the system's response
-     is right or wrong. "What are good dining halls?" is too vague.
-     "What do students say about wait times at [dining hall name] during lunch?" is testable. -->
 
 | # | Question | Expected answer |
 |---|----------|-----------------|
@@ -89,33 +130,35 @@ recoverable from either side.
 | 3 | Is Paul Croll's class hard, and what's his reputation? | No, low difficulty (~2.1/5) and very high quality (~4.7/5, 95% would take again). Funny, caring, engaging, easy A; one critique that it can be too basic / politically polarized discussion. |
 | 4 | What are the main complaints about Ruby Auf's PUBH-300 (Epidemiology) class? | Disorganization: syllabus/rubrics change repeatedly, instructions given only verbally, unclear deadlines; some students feel talked over. (Reviews are polarized — others praise her feedback and care.) |
 | 5 | On YikYak, which calculus (Math 160) professor is recommended for an easy/lenient class, and who should be avoided? | Recommended: **Randazzo** (but "you have to lock in") and **Ben Civiletti** (one student finished with an A). Avoid: **Sward Andrews**. Mixed feelings on Civiletti ("acts like you're stupid"). |
+
+All five have answers I can verify against specific lines in the documents, so a grader (or I) can
+judge accurate / partially accurate / inaccurate.
+
 ---
 
 ## Anticipated Challenges
 
-<!-- What could go wrong? Name at least two specific risks with reasoning.
-     Consider: noisy or inconsistent documents, missing source attribution, off-topic
-     retrieval, chunks that split key information across boundaries. -->
-
-1. **Inconsistent / noisy formatting.** The RMP files aren't uniform — some are
-   one-review-per-block separated by `---` (Jensen, Croll, Cetin, Auf), while Burge and Mueller are
-   pre-summarized bullet lists. The chunker has to handle both layouts without producing fragments
-   or merging multiple bullets into one diluted chunk.
+1. **Polarized professors → biased / one-sided answers.** Auf and Burge have both glowing 5.0 and
+   scathing 1.0 reviews. If top-4 retrieval happens to pull only the negative (or only the positive)
+   chunks, the generated answer will sound like a confident consensus when the reality is split.
+   This is a retrieval-coverage problem, and a likely **failure case** to document — the answer
+   isn't "wrong" per se, it's misleadingly one-sided. Mitigation: report it honestly; consider
+   raising k or noting disagreement in the prompt.
 
 2. **Conflicting sources across document types.** The CS YikYak thread says Mueller is "gone" and
    even "the anti-Christ," while her RMP file is overwhelmingly positive (4.7/5). The system could
    merge these into a contradictory or confusing answer, or cite the wrong source for a claim.
    Source attribution has to be exact so the user can see *which* source said what.
 
+3. **(Bonus risk) Inconsistent / noisy formatting.** The RMP files aren't uniform — some are
+   one-review-per-block separated by `---` (Jensen, Croll, Cetin, Auf), while Burge and Mueller are
+   pre-summarized bullet lists. The chunker has to handle both layouts without producing fragments
+   or merging multiple bullets into one diluted chunk.
+
 ---
 
 ## Architecture
 
-<!-- Draw a diagram of your pipeline showing the five stages:
-     Document Ingestion → Chunking → Embedding + Vector Store → Retrieval → Generation
-     Label each stage with the tool or library you're using.
-     You can use ASCII art, a Mermaid diagram, or embed a sketch as an image.
-     You'll use this diagram as context when prompting AI tools to implement each stage. -->
 ```
  1. Ingestion        2. Chunking        3. Embedding + Store      4. Retrieval        5. Generation
  ------------        -----------        --------------------      ------------        -------------
@@ -130,19 +173,10 @@ recoverable from either side.
                                                                                   (question -> answer
                                                                                      + source list)
 ```
+
 ---
 
 ## AI Tool Plan
-
-<!-- For each part of the pipeline below, describe:
-     - Which AI tool you plan to use (Claude, Copilot, ChatGPT, etc.)
-     - What you'll give it as input (which sections of this planning.md, which requirements)
-     - What you expect it to produce
-     - How you'll verify the output matches your spec
-
-     "I'll use AI to help me code" is not a plan.
-     "I'll give Claude my Chunking Strategy section and ask it to implement chunk_text()
-     with my specified chunk size and overlap" is a plan. -->
 
 **Milestone 3 — Ingestion and chunking:**
 I'll give **Claude** my *Documents* table and *Chunking Strategy* section above (plus a note that RMP
@@ -170,4 +204,3 @@ trusting the model to cite. **Verify:** I'll read the system prompt to confirm g
 *enforced*, test an out-of-scope question (e.g. "what's the best dining hall?") to confirm it
 refuses, and check that a normal answer's cited sources actually match the chunks that were
 retrieved.
-

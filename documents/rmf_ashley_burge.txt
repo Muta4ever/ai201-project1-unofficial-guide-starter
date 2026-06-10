@@ -1,0 +1,29 @@
+﻿---
+SOURCE: Rate My Professors Archive - Augustana College
+PROFESSOR: Ashley Burge (English)
+COURSE_FOCUS: ENGL275 (Upper-Level Literature / Writing)
+DATA: Predominantly Quality 1.0/5 - 2.0/5, Difficulty 4.0/5 - 5.0/5
+REVIEWS_SUMMARY:
+- Review (2026-01-27): Quality 2.0, Difficulty 5.0. Grade: B. Attendance: Mandatory. Text: "I often felt like she was diminishing the knowledge I already knew about the subject. When I wrote about concepts accurately in my essays, she said I appropriated my Black friends. She often likes to believe she is saying revolutionary things; she should know that some students come into the class already having been taught her course subjects." Tags: Tough Grader, Participation Matters, Lecture Heavy.
+- Review (2025-12-05): Quality 1.0, Difficulty 5.0. Grade: B-. Attendance: Mandatory. Text: "Professor Burge is an extremely difficult professor when it comes to grading. Workload is heavy; expect to read around 80 pages per class. Does not respond to emails and does not give direct answers to questions about grading criteria." Tags: Tough Grader, Lots of Homework, Lecture Heavy.
+- Review (2025-12-04): Quality 5.0, Difficulty 4.0. Grade: A-. Attendance: Mandatory. Text: "You can get a good grade by doing the absolute bare minimum, and she will praise participation. People claim she has a bias against white men, but the only time she questions their ideas is when they are legitimately being racist." Tags: Get Ready to Read, Participation Matters, Gives Good Feedback.
+- Review (2025-10-25): Quality 1.0, Difficulty 5.0. Grade: A-. Text: "What does it tell you that Augustana just gave tenure to this professor despite all her terrible reviews? Honestly, this is the lowest average I've seen."
+- Review (2025-10-07): Quality 1.0, Difficulty 5.0. Grade: A. Text: "Do not take Ashley Burge unless you want the worst semester of your life filled with anxiety and agony. She grades like an upper-level graduate school professor." Tags: Tough Grader, Get Ready to Read, Participation Matters.
+- Review (2025-05-19): Quality 1.0, Difficulty 5.0. Grade: B. Text: "Only her opinion is validated. I find it troubling that many students have expressed concerns regarding Professor Burge being transphobic, homophobic, and dismissive of students who do not share her experiences." Tags: Tough Grader, Get Ready to Read, Lots of Homework.
+- Review (2025-05-19): Quality 1.0, Difficulty 5.0. Grade: B. Text: "Burge does not listen to differing points of view. She talks over students, disregards their experiences, and belittles them in front of the class."
+- Review (2025-03-04): Quality 1.0, Difficulty 5.0. Grade: B-. Text: "Got in trouble for falling asleep once in class even though she knew the issues I was going through at the time." Tags: Tough Grader, Participation Matters.
+- Review (2024-12-17): Quality 1.0, Difficulty 4.0. Grade: B+. Text: "If you enjoy vague and highly subjective grading criteria, being forced to agree with all your professor's opinions, and watching classmates be harassed, then Dr. Burge is the professor for you."
+- Review (2024-12-13): Quality 3.0, Difficulty 4.0. Grade: B-. Text: "Many students criticize the professor because the course requires substantial reading and writing. More quizzes and fewer written assignments would improve the class."
+---
+---
+SOURCE: Rate My Professors Archive - Augustana College
+PROFESSOR: Ashley Burge (First Year Inquiry)
+COURSE_FOCUS: FYI101 (Foundational First-Year Requirement)
+DATA: Quality 1.0/5, Difficulty 3.0/5 - 5.0/5
+REVIEWS_SUMMARY:
+- Review (2026-02-03): Quality 1.0, Difficulty 5.0. Grade: B+. Text: "Very strict with marking. I would not take her class again."
+- Review (2026-01-29): Quality 1.0, Difficulty 4.0. Grade: B+. Text: "She often makes people feel as though they do not know anything. I frequently felt belittled and disrespected." Tags: Tough Grader, Gives Good Feedback, So Many Papers.
+- Review (2025-12-01): Quality 1.0, Difficulty 4.0. Grade: B. Text: "I do not think I learned a single thing in this class. Discussions on class discrimination and oppression under capitalism were shut down." Tags: Tough Grader.
+- Review (2025-11-17): Quality 1.0, Difficulty 5.0. Grade: B. Text: "She only believes her opinion is valid and treats the class like an upper-level course." Tags: Tough Grader, Get Ready to Read, So Many Papers.
+- Review (2024-08-24): Quality 1.0, Difficulty 3.0. Grade: A. Text: "She asks for opposing arguments but often argues against students who provide them. Grading is unclear and only her opinions seem welcome." Tags: Tough Grader, Lots of Homework, Graded by Few Things.
+---

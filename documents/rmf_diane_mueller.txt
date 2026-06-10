@@ -1,0 +1,34 @@
+﻿SOURCE: Rate My Professors Archive - Augustana College
+PROFESSOR: Diane Mueller (Computer Science / Mathematics)
+COURSE_FOCUS: CSC202 (Data Structures / Intro to Java)
+DATA: Overall Quality 4.7/5, Difficulty 3.3/5, 100% Would Take Again
+REVIEWS_SUMMARY:
+- Review (2023-02-03): Quality 5.0, Difficulty 3.0. Grade: A-. Amazing professor. If you go to class, you will learn a lot. Accessible outside class.
+- Review (2022-12-20): Quality 5.0, Difficulty 5.0. Grade: B+. Requires class participation but is charismatic and engaging. Assigns coding practices that are time-consuming but beneficial. Lots of homework.
+- Review (2022-10-11): Quality 5.0, Difficulty 4.0. Grade: A-. Excellent professor, extremely helpful, and available. Tough grader, lecture heavy.
+- Review (2022-05-02): Quality 5.0, Difficulty 4.0. Grade: A-. Expects effort from students. Available during office hours and helps with coding practices and projects.
+- Review (2021-10-24): Quality 4.0, Difficulty 4.0. Kind and interesting. The course provided a strong introduction to Java. Skip class? You won't pass.
+- Review (2021-05-28): Quality 5.0, Difficulty 4.0. Grade: A. Structured classes, clear instruction. Demands effort but students gain significant knowledge.
+- Review (2020-05-08): Quality 5.0, Difficulty 4.0. Grade: A. Class is structured well, assignments align with lectures, and feedback is detailed. Homework is substantial but beneficial.
+---
+SOURCE: Rate My Professors Archive - Augustana College
+PROFESSOR: Diane Mueller (Computer Science / Mathematics)
+COURSE_FOCUS: CSC212, CS212, CSC211, CSC111 (Advanced Java and Foundations)
+REVIEWS_SUMMARY:
+- Review (2019-06-03): Quality 5.0, Difficulty 4.0. Grade: A. Assignments are challenging but help build understanding. Professor Mueller is frequently available for assistance.
+- Review (2017-04-25): Quality 4.0, Difficulty 2.0. A good teacher who occasionally offers extra credit opportunities for students who exceed assignment requirements.
+- Review (2017-03-23): Quality 5.0, Difficulty 3.0. Grade: B-. Wants students to succeed, is approachable, and provides extensive assistance on difficult projects.
+- Review (2013-01-07): Quality 3.0, Difficulty 4.0. Expect significant homework and strict grading. The course becomes substantially more difficult as the semester progresses.
+- Review (2012-10-30): Quality 4.0, Difficulty 3.0. Material is explained clearly and assignments are well designed, though grading can be strict.
+- Review (2011-10-06): Quality 5.0, Difficulty 3.0. Extremely helpful and understanding.
+- Review (2012-06-11): Quality 5.0, Difficulty 2.0. Clear lectures, hands-on learning opportunities, and assignments that reinforce understanding.
+---
+SOURCE: Rate My Professors Archive - Augustana College
+PROFESSOR: Diane Mueller (Computer Science / Mathematics)
+COURSE_FOCUS: CALC219, MATH220, MATH204 (Mathematics Courses)
+REVIEWS_SUMMARY:
+- Review (2019-01-27): Quality 5.0, Difficulty 3.0. Excellent mathematics instructor. Homework is manageable, quizzes are fair, and exams thoroughly cover taught material. Skip class? You won't pass.
+- Review (2012-11-05): Quality 5.0, Difficulty 3.0. Very willing to help students understand concepts and highly recommended.
+- Review (2015-05-13): Quality 5.0, Difficulty 2.0. Helpful and approachable instructor. Homework is extensive but prepares students well for exams.
+- Review (2014-06-14): Quality 4.5, Difficulty 2.0. Invested in student learning, provides excellent office hours, and gives substantial but manageable assignments.
+---
